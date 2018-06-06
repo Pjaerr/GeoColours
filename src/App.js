@@ -24,7 +24,7 @@ class App extends Component
 
   testFunc = () =>
   {
-    getPixels('https://pbs.twimg.com/media/DRfqQX4VQAErefq.jpg:large', (err, pixels) =>
+    getPixels('https://pbs.twimg.com/media/Dep_oEnX0AAWcfH.jpg:large', (err, pixels) =>
     {
       if (err)
       {
