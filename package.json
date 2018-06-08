@@ -95,6 +95,7 @@
   },
   "devDependencies": {
     "node-sass": "^4.9.0",
+    "react-styleguidist": "^7.0.17",
     "sass-loader": "^7.0.2"
   }
 }
