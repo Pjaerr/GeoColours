@@ -1,5 +1,6 @@
-@import 'variables'; //Import _variables SASS partial.
+@import url('https://fonts.googleapis.com/css?family=Lobster');
 
+@import 'variables';
 
 /*Default full viewport application attributes.*/
 html,
@@ -9,12 +10,13 @@ body,
     height: 100%;
     margin: 0;
 
-    
+    font-family: $fontFamily;
 }
 
 .App
 {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     

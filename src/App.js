@@ -8,6 +8,7 @@ import './App.scss';
 
 //Import Components
 import Gradient from './components/Gradient.js';
+import Button from './components/Button.js';
 
 const generatePalette = require('get-rgba-palette');
 const getPixels = require('get-pixels');
@@ -18,11 +19,11 @@ class App extends React.Component
   {
     super(props);
 
-    this.state = { hasGeneratedPalette: false, firstColour: "red", secondColour: "green" };
+    this.state = { hasGeneratedPalette: false, firstColour: "#2C472E", secondColour: "#9AB77A" };
     this.colourPalette = [];
   }
 
-
+  //#region colour palette code
   // testFunc = () =>
   // {
   //   getPixels('https://pbs.twimg.com/media/Dep_oEnX0AAWcfH.jpg:large', (err, pixels) =>
@@ -67,14 +68,17 @@ class App extends React.Component
   //   }
 
   // }
+  //#endregion
 
 
   render()
   {
     return (
-      <div className="App">
-        <Gradient
+      <div className="App" style={{ backgroundColor: this.state.firstColour }}>
         <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} />
+        <Button width="100px" height="40px" backgroundColour="#fff" style="raised" onClick={() => console.log("Button Clicked!")}>
+          Click Me!
+        </Button>
       </div>
     );
   }
