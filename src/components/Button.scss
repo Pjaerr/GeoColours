@@ -1,6 +1,7 @@
 .Button
 {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
@@ -11,16 +12,19 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently
                         supported by Chrome and Opera */
+
+    font-size: 18px;
+    
 }
 
 .empty:hover
 {
-    padding-bottom: 5px;
+    text-decoration: underline;
 }
 
 .empty:active
 {
-    padding-bottom: 0px;
+    padding-bottom: 1px;
 }
 
 $borderColour: #353b488f;

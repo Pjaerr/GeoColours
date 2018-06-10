@@ -7,6 +7,7 @@ import React from 'react';
 import './App.scss';
 
 //Import Components
+import Card from './components/Card.js';
 import Gradient from './components/Gradient.js';
 import Button from './components/Button.js';
 
@@ -19,7 +20,7 @@ class App extends React.Component
   {
     super(props);
 
-    this.state = { hasGeneratedPalette: false, firstColour: "#2C472E", secondColour: "#9AB77A" };
+    this.state = { hasGeneratedPalette: false, firstColour: "#234359", secondColour: "#7C7C74" };
     this.colourPalette = [];
   }
 
@@ -74,11 +75,24 @@ class App extends React.Component
   render()
   {
     return (
-      <div className="App" style={{ backgroundColor: this.state.firstColour }}>
-        <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} />
-        <Button width="100px" height="40px" backgroundColour="#fff" style="raised" onClick={() => console.log("Button Clicked!")}>
-          Click Me!
-        </Button>
+      <div id="App" style={{ backgroundColor: this.state.firstColour }}>
+        <Card>
+          <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} />
+          <div id="Buttons">
+            <div className="button">
+              <Button width="100px" height="40px" backgroundColour="#fff" onClick={() => console.log("Button Clicked!")}>
+                <img src={require("./icons/code.svg")} alt="View CSS Code Icon" />
+                View CSS
+              </Button>
+            </div>
+            <div className="button">
+              <Button width="100px" height="40px" backgroundColour="#fff" onClick={() => console.log("Button Clicked!")}>
+                <img src={require("./icons/image.svg")} alt="View Image Icon" />
+                View Image
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     );
   }

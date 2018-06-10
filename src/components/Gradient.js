@@ -18,7 +18,7 @@ class Gradient extends React.Component
     static propTypes =
         {
             firstColour: PropTypes.string.isRequired,
-            secondColour: PropTypes.string.isRequired
+            secondColour: PropTypes.string.isRequired,
         };
 
     render()
