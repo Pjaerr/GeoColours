@@ -14,17 +14,19 @@
                         supported by Chrome and Opera */
 
     font-size: 18px;
-    
+
+    text-decoration: underline;
+    letter-spacing: 0.5px;
 }
 
 .empty:hover
 {
-    text-decoration: underline;
+    font-weight: bold;
 }
 
 .empty:active
 {
-    padding-bottom: 1px;
+    padding-bottom: 2px;
 }
 
 $borderColour: #353b488f;

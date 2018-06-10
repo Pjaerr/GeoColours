@@ -21,7 +21,17 @@ body,
     align-items: center;
     
     min-height: 100%;
+    background: $textColour;
     color: $textColour;
+}
+
+#title
+{
+    margin-top: -40px;
+    font-size: 36px;
+    color: #fff;
+
+    letter-spacing: 2px;
 }
 
 #Buttons
@@ -32,6 +42,7 @@ body,
 
 .button
 {
+    
     margin: 15px;
 }
 
