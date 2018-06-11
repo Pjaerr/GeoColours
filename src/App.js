@@ -12,7 +12,10 @@ import Gradient from './components/Gradient.js';
 import Button from './components/Button.js';
 
 import generatePalette from 'get-rgba-palette';
-import getPixels from 'get-pixels';
+const getPixels = require('get-pixels');
+
+const rawjs = require('raw.js');
+const reddit = new rawjs();
 
 class App extends React.Component
 {
@@ -27,7 +30,14 @@ class App extends React.Component
 
     this.colourPalette = [];
 
-    this.getColours("https://pbs.twimg.com/media/DfNpaMWW0AES_qg.jpg:large");
+    reddit.setupOAuth2("D_htB7b-H13HRg", "aObzp_MljVBhAwxXcfD1Uqhhedw", "https://pjaerr.github.io/GeoColours");
+
+    reddit.hot({ r: "EarthPorn" }, (err, response) =>
+    {
+      let url = response.children[0].data.preview.images[0].source.url;
+
+      this.getColours(url);
+    });
   }
 
   getColours = (url) =>
@@ -36,10 +46,11 @@ class App extends React.Component
     {
       if (err)
       {
-        console.error("Bad Image Path");
+        console.error(err);
       }
       else
       {
+        console.log(pixels);
         this.colourPalette = generatePalette(pixels.data, 5, 20);
 
         this.setState({ hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
