@@ -12,10 +12,9 @@ import Gradient from './components/Gradient.js';
 import Button from './components/Button.js';
 
 import generatePalette from 'get-rgba-palette';
-const getPixels = require('get-pixels');
+import getPixels from 'get-pixels';
+import request from "request";
 
-const rawjs = require('raw.js');
-const reddit = new rawjs();
 
 class App extends React.Component
 {
@@ -30,32 +29,80 @@ class App extends React.Component
 
     this.colourPalette = [];
 
-    reddit.setupOAuth2("D_htB7b-H13HRg", "aObzp_MljVBhAwxXcfD1Uqhhedw", "https://pjaerr.github.io/GeoColours");
+    this.sendRedditRequest();
 
-    reddit.hot({ r: "EarthPorn" }, (err, response) =>
+    this.index = 0;
+  }
+
+
+  sendRedditRequest = () =>
+  {
+    // ! reddit.setupOAuth2("D_htB7b-H13HRg", "aObzp_MljVBhAwxXcfD1Uqhhedw", "https://pjaerr.github.io/GeoColours");
+
+    request("https://www.reddit.com/r/EarthPorn/hot.json?&jsonp", (error, response, body) =>
     {
-      let url = response.children[0].data.preview.images[0].source.url;
+      if (error)
+      {
+        console.error(error);
+        return;
+      }
 
-      this.getColours(url);
+      body = JSON.parse(body);
+
+      let source = body.data.children[this.index].data.preview.images[0].source;
+      console.log(source);
+
+
+      this.getColours(window.location.href + "?url=" + source.url);
+
+      this.index++;
     });
   }
 
   getColours = (url) =>
   {
-    getPixels(url, (err, pixels) =>
+    if (this.ctx === null || this.ctx === undefined)
     {
-      if (err)
-      {
-        console.error(err);
-      }
-      else
-      {
-        console.log(pixels);
-        this.colourPalette = generatePalette(pixels.data, 5, 20);
+      this.ctx = this.canvas.getContext("2d");
+    }
 
-        this.setState({ hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
-      }
-    });
+    let image = new Image(100, 100);
+    image.src = url;
+
+    image.onload = () =>
+    {
+      console.log("Loaded image");
+
+      this.canvas.width = 100;
+      this.canvas.height = 100;
+
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+
+
+      let data = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+
+      this.colourPalette = generatePalette(data.data, 5, 20);
+
+      this.setState({ hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
+    }
+
+
+    // getPixels(url, (err, pixels) =>
+    // {
+    //   if (err)
+    //   {
+    //     console.error(err);
+    //   }
+    //   else
+    //   {
+    //     console.log(pixels);
+    //     this.colourPalette = generatePalette(pixels.data, 5, 20);
+
+    //     this.setState({ hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
+    //   }
+    // });
   }
 
 
@@ -85,7 +132,7 @@ class App extends React.Component
           <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} />
           <div id="Buttons">
             <div className="button">
-              <Button width="100px" height="40px" backgroundColour="#fff" onClick={() => console.log("Button Clicked!")}>
+              <Button width="100px" height="40px" backgroundColour="#fff" onClick={this.sendRedditRequest}>
                 <img src={require("./icons/code.svg")} alt="Copy CSS Code Icon" />
                 Copy CSS
               </Button>
@@ -98,6 +145,8 @@ class App extends React.Component
             </div>
           </div>
         </Card>
+
+        <canvas id="canvas" ref={node => this.canvas = node}></canvas>
       </div>
     );
   }
