@@ -54,6 +54,21 @@ body,
     }
 }
 
-#canvas
+.palette-container
 {
+    display: flex;
+    padding-top: 5px;
+
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 2.5px 5px 0px, rgba(0, 0, 0, 0.23) -2px 1px 6px 0px;
+}
+
+.palette-container-colour
+{
+    width: 30px;
+    height: 20px;
+}
+
+#dummy-input
+{
+    display: none;
 }
