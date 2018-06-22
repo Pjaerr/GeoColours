@@ -24,7 +24,7 @@ class App extends React.Component
 
     this.state =
       {
-        hasGeneratedPalette: false, firstColour: "#075372", secondColour: "#848784"
+        toastEnabled: false, hasGeneratedGradient: true, hasGeneratedPalette: false, firstColour: "#075372", secondColour: "#848784"
       };
 
     this.images = [];
@@ -57,49 +57,56 @@ class App extends React.Component
   {
     for (let i = 0; i < posts.length; i++)
     {
-      this.images.push(window.location.href + '?url=' + posts[i].data.preview.images[0].source.url);
+      this.images.push(posts[i].data);
     }
   }
 
   generateGradient = () =>
   {
-    this.updateGradient(this.images[this.currentImage]);
+    if (this.state.hasGeneratedGradient)
+    {
+      this.setState({ hasGeneratedGradient: false, hasGeneratedPalette: false });
 
-    if (this.currentImage < this.images.length)
-    {
-      this.currentImage++;
-    }
-    else
-    {
-      this.currentImage = 0;
+      this.updateGradient(window.location.href + '?url=' + this.images[this.currentImage].thumbnail);
+
+      if (this.currentImage < this.images.length - 1)
+      {
+        this.currentImage++;
+      }
+      else
+      {
+        this.currentImage = 0;
+      }
     }
   }
 
   updateGradient = (url) =>
   {
+
     getPixels(url, (err, pixels) =>
     {
       if (err)
       {
         console.error(err);
+        this.generateGradient();
       }
       else
       {
         this.colourPalette = generatePalette(pixels.data, 5, 20);
 
-        this.setState({ hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
+        this.setState({ viewingImage: false, hasGeneratedGradient: true, hasGeneratedPalette: true, firstColour: "rgb(" + this.colourPalette[0][0] + "," + this.colourPalette[0][1] + "," + this.colourPalette[0][2] + ")", secondColour: "rgb(" + this.colourPalette[4][0] + "," + this.colourPalette[4][1] + "," + this.colourPalette[4][2] + ")" });
       }
     });
   }
 
   copyGradientCode = () =>
   {
+    this.viewImage();
+
     let firstColour = this.state.firstColour;
     let secondColour = this.state.secondColour;
 
     let code = "background:" + firstColour + ";\n background: -webkit-linear-gradient(to bottom, " + firstColour + ", " + secondColour + "); \n background: linear-gradient(to bottom, " + firstColour + ", " + secondColour + "); ";
-
-    console.log("Copied Code!");
 
     const textField = document.createElement('textarea');
     textField.innerText = code;
@@ -108,6 +115,13 @@ class App extends React.Component
     textField.select();
     document.execCommand('copy');
     parentElement.removeChild(textField);
+
+    if (!this.state.toastEnabled)
+    {
+      this.setState({ toastEnabled: true });
+
+      setTimeout(() => { this.setState({ toastEnabled: false }); }, 6000);
+    }
   }
 
   renderColourPalette = () =>
@@ -126,6 +140,35 @@ class App extends React.Component
     }
   }
 
+  renderLoadingAnim = () =>
+  {
+    if (!this.state.hasGeneratedGradient)
+    {
+      return (
+        <div id="loading-anim">
+          <img src={require("./icons/refresh-cw.svg")} alt="Loading" />
+        </div>
+      );
+    }
+  }
+
+  viewImage = () =>
+  {
+    this.setState({ viewingImage: true });
+  }
+
+  renderImage = () =>
+  {
+    console.table(this.images[this.currentImage]);
+    return (
+
+
+      <div>
+      </div>
+
+    );
+  }
+
 
   render()
   {
@@ -134,17 +177,23 @@ class App extends React.Component
         <h1 id="title"> GeoColours </h1>
 
         <Card>
-          <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} />
-          <div id="Buttons">
+          {
+            this.state.viewingImage ?
+              this.state.hasGeneratedGradient ?
+                <Gradient firstColour={this.state.firstColour} secondColour={this.state.secondColour} /> :
+                this.renderLoadingAnim() :
+              this.renderImage()
+          }
+          <div id="buttons">
             <div className="button">
               <Button width="100px" height="40px" backgroundColour="#fff" onClick={this.copyGradientCode}>
-                <img src={require("./icons/code.svg")} alt="Copy CSS Code Icon" />
+                <img src={require("./icons/code.svg")} alt="Copy CSS Code" />
                 Copy CSS
               </Button>
             </div>
             <div className="button">
               <Button width="100px" height="40px" backgroundColour="#fff" onClick={this.generateGradient}>
-                <img src={require("./icons/refresh-cw.svg")} alt="View Image Icon" />
+                <img src={require("./icons/refresh-cw.svg")} alt="Generate New Gradient" />
                 Generate
               </Button>
             </div>
@@ -152,6 +201,10 @@ class App extends React.Component
         </Card>
 
         {this.renderColourPalette()}
+
+        <div id="toast" style={{ display: this.state.toastEnabled ? "block" : "none" }}>
+          CSS Copied 👌
+        </div>
       </div>
     );
   }
